@@ -28,3 +28,23 @@ DELIMITER ;
 
 UPDATE producto SET precio=170 Where idProducto = 1;
 UPDATE producto SET precio=1500 Where idProducto = 6;
+
+-- Funcion tiempo de trabajo 
+DELIMITER $$
+  CREATE FUNCTION HorasTrabajadas(horaDeEntrada time, horaDesalida time) RETURNS time
+  DETERMINISTIC
+  BEGIN
+    DECLARE tiempo time;
+    DECLARE hora time DEFAULT now();
+    IF hora<=horaDeEntrada THEN
+    SET tiempo = null;
+    ELSEIF horaDeSalida<=hora THEN
+    SET tiempo = horaDeSalida-horaDeEntrada;
+    ELSE
+    SET tiempo = hora-horaDeEntrada;
+    END IF;
+    RETURN (tiempo);
+  END$$
+DELIMITER ;
+
+select HorasTrabajadas(entrada, salida) from personal;

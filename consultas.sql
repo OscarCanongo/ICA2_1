@@ -48,3 +48,24 @@ DELIMITER $$
 DELIMITER ;
 
 select HorasTrabajadas(entrada, salida) from personal;
+
+-- Stored procedure ventas
+ALTER TABLE ventas ADD cantidad INT;
+ALTER TABLE ventas ADD precioDeVenta FLOAT;
+
+
+DELIMITER //
+CREATE PROCEDURE procedimientoVentas(IN producto_idProducto int, cantidad1 int, idVentas int )
+	BEGIN 
+  	DECLARE productoCantidad INT;
+    DECLARE precioVenta DOUBLE;
+		 SET productoCantidad = (SELECT cantidad FROM producto WHERE idProducto = producto_idProducto);
+		 SET precioVenta = (SELECT precio FROM producto WHERE idProducto = producto_idProducto) * cantidad1;
+    IF productoCantidad >= cantidad1 THEN
+     UPDATE producto SET cantidad = productoCantidad-cantidad1 WHERE idProducto = producto_idProducto;
+     INSERT INTO ventas (idVentas, personal_idPersonal, fecha, producto_idProducto, cantidad, precioDeVenta) VALUES (idVentas, 1,NOW(),producto_idProducto, cantidad1, precioVenta);
+     END IF;
+  END //
+DELIMITER ;
+
+CALL procedimientoVentas(3,40,2);

@@ -69,3 +69,16 @@ CREATE PROCEDURE procedimientoVentas(IN producto_idProducto int, cantidad1 int, 
 DELIMITER ;
 
 CALL procedimientoVentas(3,40,2);
+
+-- Trigger orden de compra
+DELIMITER $$
+  CREATE TRIGGER after_ordenCompra
+	BEFORE UPDATE ON producto
+  FOR EACH ROW 
+  BEGIN
+   IF NEW.cantidad = 0 THEN
+  	SET NEW.cantidad = 10;
+   END IF;
+  END$$
+DELIMITER ;
+

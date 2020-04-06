@@ -82,3 +82,12 @@ DELIMITER $$
   END$$
 DELIMITER ;
 
+-- Proceso que cada 8 horas genera un resumen
+CREATE EVENT ventas_8horas
+ON SCHEDULE EVERY 1 MINUTE
+STARTS CURRENT_TIMESTAMP
+ON COMPLETION PRESERVE
+DO
+     SELECT idVentas, fecha, nombre, ventas.cantidad, precioDeVenta FROM ventas 
+     INNER JOIN producto ON producto_idProducto = idProducto WHERE ADDDATE(now(),INTERVAL -3 minute) <= fecha; 
+

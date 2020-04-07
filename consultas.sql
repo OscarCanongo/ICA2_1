@@ -93,11 +93,22 @@ DELIMITER $$
 DELIMITER ;
 
 -- Proceso que cada 8 horas genera un resumen
+CREATE TABLE bar
+  SELECT idVentas, fecha, nombre, ventas.cantidad, precioDeVenta
+  FROM ventas INNER JOIN producto ON producto_idProducto = idProducto WHERE ADDDATE(now(),INTERVAL -3 minute) <= fecha;
+
+DELIMITER //
 CREATE EVENT ventas_8horas
 ON SCHEDULE EVERY 1 MINUTE
 STARTS CURRENT_TIMESTAMP
 ON COMPLETION PRESERVE
 DO
-     SELECT idVentas, fecha, nombre, ventas.cantidad, precioDeVenta FROM ventas 
-     INNER JOIN producto ON producto_idProducto = idProducto WHERE ADDDATE(now(),INTERVAL -3 minute) <= fecha; 
+BEGIN
+	DELETE FROM bar;
+  INSERT INTO bar (idVentas, fecha, nombre, cantidad, precioDeVenta)
+  SELECT idVentas, fecha, nombre, ventas.cantidad, precioDeVenta
+  FROM ventas INNER JOIN producto ON producto_idProducto = idProducto 
+  WHERE ADDDATE(now(),INTERVAL -1 MINUTE) <= fecha;
+END //
+DELIMITER ;
 

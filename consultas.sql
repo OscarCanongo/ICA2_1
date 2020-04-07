@@ -71,6 +71,15 @@ DELIMITER ;
 CALL procedimientoVentas(3,40,2);
 
 -- Trigger orden de compra
+CREATE TABLE orden_compra(
+idCompra INT NOT NULL auto_increment,
+id_producto INT,
+cantidad float, 
+fecha datetime,
+PRIMARY KEY (idCompra),
+FOREIGN KEY (id_Producto) REFERENCES producto(idProducto)
+);
+
 DELIMITER $$
   CREATE TRIGGER after_ordenCompra
 	BEFORE UPDATE ON producto
@@ -78,6 +87,7 @@ DELIMITER $$
   BEGIN
    IF NEW.cantidad = 0 THEN
   	SET NEW.cantidad = 10;
+    INSERT INTO orden_compra(id_producto, cantidad, fecha) VALUES (OLD.idProducto, 10, now());
    END IF;
   END$$
 DELIMITER ;
